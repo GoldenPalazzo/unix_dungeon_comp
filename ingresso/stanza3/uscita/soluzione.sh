@@ -78,8 +78,10 @@ HEREDOC
         DIFFTIME=`expr $TIMEEND - $TIMESTART`
         echo "Hai impiegato $DIFFTIME microsecondi per trovare la soluzione."
         echo "Caricherò il tuo punteggio sul server..."
+        read -p "Inserisci il tuo username: " USERNAME_PROMPT
+        USERNAME_CLEAN=`echo "$USERNAME_PROMPT" | sed 's/[[:space:]]//g'`
 
-        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://francescopalazzo.net/save/$(whoami)/$DIFFTIME")
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://francescopalazzo.net/save/$USERNAME_CLEAN/$DIFFTIME")
 
         if [ "$HTTP_CODE" -ne 200 ]; then
             echo "Errore: impossibile caricare il punteggio sul server."
