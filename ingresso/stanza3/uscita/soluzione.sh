@@ -79,15 +79,18 @@ HEREDOC
         echo "Hai impiegato $DIFFTIME microsecondi per trovare la soluzione."
         echo "Caricherò il tuo punteggio sul server..."
         read -p "Inserisci il tuo username: " USERNAME_PROMPT
-        USERNAME_CLEAN=`echo "$USERNAME_PROMPT" | sed 's/[[:space:]]//g'`
+        USERNAME_CLEAN="${USERNAME_PROMPT//[[:space:]]/}"
 
-        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://francescopalazzo.net/save/$USERNAME_CLEAN/$DIFFTIME")
-
-        if [ "$HTTP_CODE" -ne 200 ]; then
-            echo "Errore: impossibile caricare il punteggio sul server."
-        else
-            echo "Punteggio caricato con successo!"
-        fi
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        THREE_UP="$(dirname "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+        EXCLUDE_LIST="$THREE_UP/.exclude_list.txt"
+        CHKSUM_CMD="find . -type f -print0 | grep -z -v -f ${EXCLUDE_LIST} | xargs -0 sha256sum | sort | sha256sum"
+        CHKSUM=$(cd "$THREE_UP" && eval "$CHKSUM_CMD" | awk '{print $1}')
+        SITE="http://francescopalazzo.net"
+        [[ "$1" == "test" ]] && SITE="http://localhost:8080"
+        JSON_PAYLOAD=$(jq -n --arg user "$USERNAME_CLEAN" --arg time "$DIFFTIME" --arg chksum "$CHKSUM" '{username: $user, time_us: $time, chksum: $chksum}')
+        RESPONSE=$(curl -s --request POST --header "Content-Type: application/json" --data "$JSON_PAYLOAD" $SITE/save)
+        echo $RESPONSE | jq -r .msg
     fi
 
 	exit 0

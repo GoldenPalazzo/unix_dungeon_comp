@@ -1,0 +1,5 @@
+./ingresso/stanza2/golem
+./ingresso/stanza2/pergamena
+.exclude_list.txt
+.git/
+./ingresso/stanza3/uscita/soluzione.sh
