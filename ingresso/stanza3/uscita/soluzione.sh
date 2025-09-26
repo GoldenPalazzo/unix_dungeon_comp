@@ -79,7 +79,7 @@ HEREDOC
         echo "Hai impiegato $DIFFTIME microsecondi per trovare la soluzione."
         echo "Caricherò il tuo punteggio sul server..."
         read -p "Inserisci il tuo username: " USERNAME_PROMPT
-        USERNAME_CLEAN="${USERNAME_PROMPT//[[:space:]]/}"
+        USERNAME_CLEAN=`echo "$USERNAME_PROMPT" | sed 's/[[:space:]]//g'`
 
         SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
         THREE_UP="$(dirname "$(dirname "$(dirname "$SCRIPT_DIR")")")"
