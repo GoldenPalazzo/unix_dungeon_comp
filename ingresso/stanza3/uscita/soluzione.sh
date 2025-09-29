@@ -87,7 +87,8 @@ HEREDOC
         CHKSUM_CMD="find . -type f -print0 | grep -z -v -f ${EXCLUDE_LIST} | xargs -0 sha256sum | sort | sha256sum"
         CHKSUM=$(cd "$THREE_UP" && eval "$CHKSUM_CMD" | awk '{print $1}')
         SITE="http://francescopalazzo.net"
-        if [[ "$1" == "test" ]]; then
+        if [ "$1" = "test" ]
+        then
             SITE="http://localhost:8080"
         fi
         JSON_PAYLOAD=$(jq -n --arg user "$USERNAME_CLEAN" --arg time "$DIFFTIME" --arg chksum "$CHKSUM" '{username: $user, time_us: $time, chksum: $chksum}')
